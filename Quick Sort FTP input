@@ -1,0 +1,27 @@
+CREATE TABLE ordinal_list (
+    x INT PRIMARY KEY,
+    y VARCHAR(255)
+);
+
+DECLARE @text VARCHAR(MAX);
+SET @text = 'This is a large block of text with multiple occurrences of "remote:" and strings ending in ".xxx".';
+
+DECLARE @start INT;
+DECLARE @end INT;
+DECLARE @counter INT;
+SET @counter = 0;
+
+WHILE CHARINDEX('remote:', @text) > 0
+BEGIN
+    SET @start = CHARINDEX('remote:', @text) + 7;
+    SET @end = CHARINDEX('.xxx', @text, @start);
+
+    IF @end > 0
+    BEGIN
+        SET @counter = @counter + 1;
+        INSERT INTO ordinal_list (x, y)
+        VALUES (@counter, SUBSTRING(@text, @start, @end - @start));
+
+        SET @text = STUFF(@text, @start, @end + 3, '');
+    END;
+END;
